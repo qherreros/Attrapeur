@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "attrapeur"
+version = "0.1.0"
+description = ""
+authors = ["Quentin Herreros <quentin.herreros@elastic.co>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+google-api-python-client = "^2.98.0"
+notify-py = "^0.3.42"
+loguru = "0.6.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

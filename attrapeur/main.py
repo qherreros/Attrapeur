@@ -44,7 +44,7 @@ def main(instance: str, zone: str):
             logger.info("Instance started")
             notify("Instance started", f"{instance} has been started on GCP")
         elif status in PENDING_STATES:
-            logger.info(f"Intance is still in {status} state. Extending wait time...")
+            logger.info(f"Instance is still in {status} state. Extending wait time...")
         elif counter > 30:
             logger.warning(f"Instance not started (Status: {status}). Trying again...")
             start_instance(service, zone, instance)

@@ -2,9 +2,9 @@ import argparse
 from time import sleep
 from typing import Any
 
-from googleapiclient import discovery
+from googleapiclient import discovery  # type: ignore
 from loguru import logger
-from notifypy import Notify
+from notifypy import Notify  # type: ignore
 
 
 def get_instance_status(service: Any, zone: str, instance: str):
@@ -29,23 +29,29 @@ def notify(title: str, message: str):
 def main(instance: str, zone: str):
     logger.info(f"Starting instance {instance} in zone {zone}")
 
+    PENDING_STATES = {"PROVISIONING", "STAGING"}
+
     service = discovery.build("compute", "v1")
     start_instance(service, zone, instance)
+
     counter = 0
     is_started = False
     while not is_started:
         status = get_instance_status(service, zone, instance)
+
         if status == "RUNNING":
             is_started = True
             logger.info("Instance started")
             notify("Instance started", f"{instance} has been started on GCP")
+        elif status in PENDING_STATES:
+            logger.info(f"Intance is still in {status} state. Extending wait time...")
+        elif counter > 30:
+            logger.warning(f"Instance not started (Status: {status}). Trying again...")
+            start_instance(service, zone, instance)
+            counter = 0
         else:
             counter += 1
-            if counter > 60:
-                logger.error("Instance not started. Trying again...")
-                start_instance(service, zone, instance)
-                counter = 0
-        sleep(1)
+        sleep(5)
 
 
 if __name__ == "__main__":
